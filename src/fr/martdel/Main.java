@@ -1,6 +1,5 @@
 package fr.martdel;
 
-import java.util.List;
 import java.util.Map;
 
 public class Main {
@@ -8,7 +7,7 @@ public class Main {
     private static final String FILENAME = "/home/martin/Documents/dev/Java/TheseusProto/src/fr/martdel/res/recipes.xml";
 
     public static void main(String[] args) {
-        Map<String, Recipe> recipes = Recipe.getAllRecipe(FILENAME, true);
+        Map<String, Recipe> recipes = Recipe.getAllRecipes(FILENAME, true);
         if(!recipes.isEmpty()){
 //            for (String name : recipes.keySet()) {
 //                Recipe current_recipe = recipes.get(name);
@@ -26,6 +25,10 @@ public class Main {
 //                }
 //                System.out.println("]");
 //            }
+            for (String name : recipes.keySet()) {
+                Recipe current_recipe = recipes.get(name);
+                if(!current_recipe.test(recipes)) System.out.println(name);
+            }
         } else {
             System.out.println("No recipe has been parsed...");
         }

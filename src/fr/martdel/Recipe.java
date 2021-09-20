@@ -24,7 +24,6 @@ public class Recipe {
     private final String label;
     private final List<List<Item>> requires;
 
-
     public Recipe(String name, int count, String label, List<List<Item>> requires) {
         this.name = name;
         this.count = count;
@@ -32,12 +31,23 @@ public class Recipe {
         this.requires = requires;
     }
 
-    public boolean test(){
-
+    public boolean test(Map<String, Recipe> recipes){
+        boolean result = true;
+        for(List<Item> options : requires){
+            for(Item option : options){
+                if(option.isTag()){
+                    if(!getRecipesByTag(recipes, option.getName()).contains(this))
+                        result = false;
+                } else {
+                    if(recipes.containsKey(option.getName()))
+                        result = false;
+                }
+            }
+        }
         return true;
     }
 
-    public static Map<String, Recipe> getAllRecipe(String filename, boolean verbose){
+    public static Map<String, Recipe> getAllRecipes(String filename, boolean verbose){
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         Map<String, Recipe> recipes = new HashMap<>();
 
@@ -147,7 +157,7 @@ public class Recipe {
         List<Recipe> result = new ArrayList<>();
         for (String name : recipes.keySet()) {
             Recipe current_recipe = recipes.get(name);
-            if (current_recipe.getLabel().equalsIgnoreCase(label))
+            if (current_recipe.hasLabel() && current_recipe.getLabel().equalsIgnoreCase(label))
                 result.add(current_recipe);
         }
         return result;
@@ -163,6 +173,10 @@ public class Recipe {
 
     public String getLabel() {
         return label;
+    }
+
+    public boolean hasLabel() {
+        return label != null;
     }
 
     public List<List<Item>> getRequires() {
