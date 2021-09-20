@@ -37,9 +37,14 @@ public class Recipe {
         return true;
     }
 
-    public static Map<String, Recipe> getAllRecipe(String filename){
+    public static Map<String, Recipe> getAllRecipe(String filename, boolean verbose){
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         Map<String, Recipe> recipes = new HashMap<>();
+
+        if (verbose){
+            System.out.println("Reading recipes...");
+            System.out.print("> ");
+        }
 
         try {
             // Add a security
@@ -52,12 +57,20 @@ public class Recipe {
             Element root = doc.getDocumentElement();
             NodeList recipes_node = root.getChildNodes();
 
-            System.out.println("Root Element :" + doc.getDocumentElement().getNodeName());
-            System.out.println("------");
+            int progress = 0;
 
             for (int i = 0; i < recipes_node.getLength(); i++) {
+
+                if (verbose) {
+                    float current_progress = ((float) i / recipes_node.getLength()) * 20;
+                    if (progress < Math.round(current_progress)) {
+                        progress++;
+                        System.out.print("+");
+                    }
+                }
+
                 Node current_recipe_node = recipes_node.item(i);
-                if (current_recipe_node.getNodeType() == Node.ELEMENT_NODE){
+                if (current_recipe_node.getNodeType() == Node.ELEMENT_NODE) {
                     Element current_recipe = (Element) current_recipe_node;
 
                     // Get recipe basics data
@@ -71,11 +84,11 @@ public class Recipe {
                     NodeList requires_node = current_recipe.getElementsByTagName("requires").item(0).getChildNodes();
                     for (int j = 0; j < requires_node.getLength(); j++) {
                         Node current_require_node = requires_node.item(j);
-                        if (current_require_node.getNodeType() == Node.ELEMENT_NODE){
+                        if (current_require_node.getNodeType() == Node.ELEMENT_NODE) {
                             Element current_require = (Element) current_require_node;
                             NodeList options_node = current_require.getElementsByTagName("options");
                             List<Item> options = new ArrayList<>();
-                            if (options_node.getLength() > 0){
+                            if (options_node.getLength() > 0) {
                                 // The current require can be more than only one item
                                 int require_count = Integer.parseInt(current_require.getElementsByTagName("amount").item(0).getTextContent());
                                 options_node = options_node.item(0).getChildNodes();
@@ -120,6 +133,11 @@ public class Recipe {
 
         } catch (ParserConfigurationException | SAXException | IOException | NumberFormatException e) {
             e.printStackTrace();
+        }
+
+        if (verbose) {
+            System.out.println(" <");
+            System.out.println("Reading done !");
         }
 
         return recipes;
