@@ -32,6 +32,11 @@ public class Recipe {
         this.requires = requires;
     }
 
+    public boolean test(){
+
+        return true;
+    }
+
     public static Map<String, Recipe> getAllRecipe(String filename){
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         Map<String, Recipe> recipes = new HashMap<>();
@@ -118,6 +123,16 @@ public class Recipe {
         }
 
         return recipes;
+    }
+
+    public static List<Recipe> getRecipesByTag(Map<String, Recipe> recipes, String label){
+        List<Recipe> result = new ArrayList<>();
+        for (String name : recipes.keySet()) {
+            Recipe current_recipe = recipes.get(name);
+            if (current_recipe.getLabel().equalsIgnoreCase(label))
+                result.add(current_recipe);
+        }
+        return result;
     }
 
     public String getName() {
